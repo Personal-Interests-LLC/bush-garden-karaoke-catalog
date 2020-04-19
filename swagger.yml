@@ -1,0 +1,408 @@
+swagger: "2.0"
+info:
+    description: This is the Swagger API file for the server code
+    version: "1.0.0"
+    title: Bush Garden Karaoke Project
+consumes:
+    - "application/json"
+produces:
+    - "application/json"
+
+basePath: "/api"
+
+# Paths supported by the server application
+paths:
+    /artist:
+        get:
+            operationId: artist.read_all
+            tags:
+                - Artist
+            summary: Read the entire artist list, sorted by artist full name 
+            description: Read the entire artist list, sorted by artist full name 
+            parameters:
+                - name: length
+                  in: query
+                  type: integer
+                  description: number of artists to fetch
+                  required: False 
+                - name: offset
+                  in: query
+                  type: integer
+                  description: offset from beginning of list where to start gathering artists
+                  required: False
+            responses:
+                200:
+                    description: successful read of artist read operation
+                    schema:
+                        type: array
+                        items:
+                            properties:
+                                artist_id:
+                                    type: string
+                                    description: the artist id
+                                full_name:
+                                    type: string
+                                first_name:
+                                    type: string
+                                last_name:
+                                    type: string
+                                songs:
+                                    type: array
+                                    items:
+                                        properties:
+                                            artist_id:
+                                                type: integer
+                                                description: id of the artist the song is assoc with
+                                            song_id:
+                                                type: integer
+                                                description: id of the song
+                                            song_name:
+                                                type: string
+                                                description: name of the song
+                                            reference_id:
+                                                type: string
+                                                description: reference id of the song
+                                            timestamp:
+                                                type: string
+                                                description: create/update time of song
+        post:
+            operationId: artist.create
+            tags:
+                - Artist
+            summary: Create an artist and add it to the artist list
+            description: Create a new artist in the artists list
+            parameters:
+                - name: artist
+                  in: body
+                  description: Artist to create
+                  required: True
+                  schema:
+                      type: object
+                      properties:
+                          full_name:
+                              type: string
+                              description: fullname of the artist
+                          last_name:
+                              type: string
+                              description: artist last name
+                          first_name:
+                              type: string
+                              description: artists first name
+            responses:
+                201:
+                    description: Successfully created artist in list
+                    schema:
+                        properties:
+                            artist_id:
+                                type: string
+                                description: id of created artist
+                            full_name:
+                                type: string
+                                description: fullname of created artist
+                            first_name:
+                                type: string
+                                description: first name of created artist
+                            last_name:
+                                type: string
+                                description: last name of created artist
+    /artist/{artist_id}:
+        get:
+            operationId: artist.read_one
+            tags:
+                - Artist
+            summary: Read one artist from the artist list with all assoc songs
+            description: Read one artist from the artist list with all assoc songs
+            parameters:
+                - name: artist_id
+                  in: path
+                  description: artist id of the artist
+                  type: integer
+                  required: True
+            responses:
+                200:
+                    description: Successfully read artist from artist list operation
+                    schema:
+                        type: array
+                        items:
+                            properties:
+                                artist_id:
+                                    type: string 
+                                    description: id of the artist
+                                full_name:
+                                    type: string
+                                    description: artist full name
+                                last_name:
+                                    type: string
+                                    description: artist last name
+                                first_name:
+                                    type: string
+                                    description: artist first name
+                                songs:
+                                    type: array
+                                    items:
+                                        properties:
+                                            song_name:
+                                                type: string
+                                                description: name of the song
+                                            reference_id:
+                                                type: string
+                                                description: reference id of the song
+                                            artist_id:
+                                                type: integer
+                                                description: id of the artist the song is assoc with
+                                            song_id:
+                                                type: integer
+                                                description: id of the song
+                                            timestamp:
+                                                type: string
+                                                description: create/update time of song
+        put:
+            operationId: artist.update
+            tags:
+                - Artist
+            summary: Update one artist from the artist list
+            description: Update one artist from the artist list
+            parameters:
+                - name: artist_id
+                  in: path
+                  description: artist id of the artist
+                  type: integer
+                  required: True
+                - name: artist
+                  in: body
+                  schema:
+                      type: object
+                      properties:
+                          full_name:
+                              type: string
+                          first_name:
+                              type: string
+                          last_name:
+                              type: string
+            responses:
+                200:
+                    description: Successfully updated artist in artist list
+                    schema:
+                        properties:
+                            artist_id:
+                                type: string
+                                description: id of the artist in db
+                            full_name:
+                                type: string
+                                description: full name of the artist in db
+                            last_name:
+                                type: string
+                                description: last name of the artist in db
+                            first_name:
+                                type: string
+                                description: first name of the artist in db
+                            timestamp:
+                                type: "string"
+                                description: create/update time of the artist record 
+        delete:
+            operationId: artist.delete
+            tags:
+                - Artist 
+            summary: Delete an artist from the artist list
+            description: Delete an artist 
+            parameters: 
+                - name: artist_id 
+                  in: path
+                  type: integer 
+                  required: True
+            responses:
+                200:
+                    description: Successfully deleted an artist from the artist list
+    /songs:
+        get:
+            operationId: songs.read_all
+            tags:
+                - Songs 
+            summary: Read the entire set of songs for all artists, sorted by song name 
+            description: Read the entire set of songs for all artists, sorted by song name 
+            responses:
+                200:
+                    description: Successfully read songs for all artists operation
+                    schema:
+                        type: array
+                        items:
+                            properties:
+                                song_id:
+                                    type: integer
+                                    description: id of the song
+                                reference_id:
+                                    type: string
+                                    description: reference id of the song
+                                song_name:
+                                    type: string
+                                    description: name of the song
+                                timestamp:
+                                    type: string
+                                    description: create/update timestamp of the song
+                                artist:
+                                    type: object
+                                    properties:
+                                        artist_id:
+                                            type: integer
+                                            description: id of the artist 
+                                        full_name:
+                                            type: string
+                                            description: full name of the artist 
+                                        first_name:
+                                            type: string
+                                            description: first name of the artist 
+                                        last_name:
+                                            type: string
+                                            description: last name of the artist
+
+    /artist/{artist_id}/songs:
+        post:
+            operationId: songs.create
+            tags:
+                - Songs
+            summary: Create a song associated with an artist
+            description: Create a song associated with an artist
+            parameters:
+                - name: artist_id
+                  in: path
+                  description: id of artist assoc with song
+                  type: integer
+                  required: True
+                - name: song 
+                  in: body
+                  description: the karaoke song to create
+                  required: True
+                  schema:
+                      type: object
+                      properties:
+                          reference_id: 
+                            type: string
+                            description: text reference_id of the karaoke song to create
+                          song_name: 
+                            type: string
+                            description: text song name of the karaoke song to create
+            responses:
+                201:
+                    description: successfully created a song
+                    schema:
+                        properties:
+                            artist_id:
+                                type: integer
+                                description: id of the artist assoc with song
+                            song_id:
+                                type: integer
+                                description: id of the song created
+                            reference_id:
+                                type: string
+                                description: text reference_id of the song
+                            song_name:
+                                type: string
+                                description: text song_name of the song
+                            timestamp:
+                                type: string
+                                description: create/update of the song
+
+    /artist/{artist_id}/songs/{song_id}:
+        get:
+            operationId: songs.read_one
+            tags:
+                - Songs
+            summary: Read a particular song associated with an artist to get full metadata
+            description: Read a particular song associated with an artist to get full metadata
+            parameters:
+                - name: artist_id
+                  in: path
+                  description: id of artist assoc with song
+                  type: integer
+                  required: True
+                - name: song_id
+                  in: path
+                  description: id of the song 
+                  type: integer
+                  required: True
+            responses:
+                200:
+                    description: successfully read song for the artist
+                    schema:
+                        type: object
+                        properties:
+                            song_id:
+                                type: integer
+                                description: id of the song
+                            artist_id:
+                                type: integer
+                                description: id of the artist assoc with song
+                            reference_id:
+                                type: string
+                                description: reference_id of the song in text
+                            timestamp:
+                                type: string
+                                description: create/update time of the song
+
+        put:
+            operationId: songs.update
+            tags:
+                - Songs
+            summary: Update a songs data
+            description: Update a songs data
+            parameters:
+                - name: artist_id
+                  in: path
+                  description: id of artist assoc with song
+                  type: integer
+                  required: True
+                - name: song_id
+                  in: path
+                  description: id of the song 
+                  type: integer
+                  required: True
+                - name: song 
+                  in: body
+                  description: the karaoke song to create
+                  required: True
+                  schema:
+                      type: object
+                      properties:
+                          reference_id: 
+                            type: string
+                            description: text reference_id of the karaoke song to create
+                          song_name: 
+                            type: string
+                            description: text song name of the karaoke song to create
+            responses:
+                200:
+                    description: successfully updated song
+                    schema:
+                        properties:
+                            song_id:
+                                type: string
+                                description: id of th esong assoc with an artist
+                            artist_id:
+                                type: integer
+                                description: id of the artist assoc with song
+                            reference_id:
+                                type: string
+                                description: text reference_id of the updated song
+                            timestamp:
+                                type: string
+                                description: create/update time of song record
+        delete:
+            operationId: songs.delete
+            tags:
+                - Songs
+            summary: Delete a song associated with an artist
+            description: Delete a song associated with an artist
+            parameters:
+                - name: artist_id
+                  type: integer
+                  in: path
+                  description: id of artist assoc with song
+                  required: True
+                - name: song_id
+                  in: path
+                  type: integer
+                  required: True
+                  description: id of the song to be deleted
+            responses:
+                200:
+                    description: succesfully deleted song
